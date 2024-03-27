@@ -6,6 +6,7 @@ import com.example.enterpriseattendancesystem.entity.Attendance;
 import com.example.enterpriseattendancesystem.service.IAttendanceService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,8 @@ import java.util.Date;
  * @author 谢妍雨
  * @since 2024-03-22
  */
-@RestController
+@CrossOrigin(origins = "http://localhost:8080")
+@Controller
 @RequestMapping("/api/attendance")
 public class AttendanceController {
     private static final Logger logger = LoggerFactory.getLogger(AttendanceController.class);
@@ -37,10 +39,11 @@ public class AttendanceController {
         return page;
     }
 
-    @PostMapping("/create/{id}")
+    @PostMapping("/create")
+    @ResponseBody
     @RequiresPermissions("attendance:create")
-    public String createAttendance(@PathVariable Long id) {
-        return attendanceService.saveStart(id);
+    public String createAttendance() {
+        return attendanceService.saveStart();
     }
 
     @PostMapping("/update/{id}")

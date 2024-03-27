@@ -18,7 +18,7 @@ public interface IAttendanceService extends IService<Attendance> {
 
     String deleteById(Long id);
 
-    String saveStart(Long id);
+    String saveStart();
 
     Object update(Long id, Attendance attendance);
 

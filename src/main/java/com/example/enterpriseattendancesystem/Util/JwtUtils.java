@@ -1,5 +1,7 @@
 package com.example.enterpriseattendancesystem.Util;
 
+import com.example.enterpriseattendancesystem.entity.Employee;
+import com.example.enterpriseattendancesystem.service.impl.EmployeeServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -9,6 +11,9 @@ import java.util.Base64;
 import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 public class JwtUtils {
     private static final String SECRET = "seMxIyPOfwk1oAG9vGbSuS0bsIakBPJVo+TlKDxwJ7HLPVBti0278OLQxBGE8syU+btFY74elmv7KDIjN8B1mQ=="; // 密钥，用于签名和验证JWT
     private static final long EXPIRATION = 604800L; // JWT有效期，默认为一周
@@ -60,5 +65,15 @@ public class JwtUtils {
         }
         return bearerToken; // 如果没有"Bearer "前缀，直接返回原Token
     }
-
+    public String getToken() {
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .getRequest()
+                .getHeader("Authorization");
+        // 假设Token是Bearer类型的，需要去掉前缀
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        // 使用Token获取用户信息
+        return token;
+    }
 }

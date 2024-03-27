@@ -18,6 +18,7 @@ import java.util.Date;
  * @author 谢妍雨
  * @since 2024-03-23
  */
+@CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping("/leave")
 public class LeaveController {

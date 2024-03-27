@@ -13,6 +13,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.sql.Time;
 import java.time.LocalDate;
@@ -42,7 +44,7 @@ public class AttendanceServiceImpl extends ServiceImpl<AttendanceMapper, Attenda
 
     @Override
     public IPage<Attendance> findById(int pageNum, int pageSize) {
-        String email = JwtUtils.getClaimByToken((String) SecurityUtils.getSubject().getPrincipal()).getSubject();
+        String email = JwtUtils.getClaimByToken(getToken()).getSubject();
         Employee auditor = employeeServiceimpl.findByEmail(email);
         // 创建 Page 对象，设置当前页码和每页显示的数量
         Page<Attendance> page = new Page<>(pageNum, pageSize);
@@ -74,10 +76,11 @@ public class AttendanceServiceImpl extends ServiceImpl<AttendanceMapper, Attenda
     }
 
     @Override
-    public String saveStart(Long id) {
+    public String saveStart() {
         //创建新的打卡记录
         Attendance attendance = new Attendance();
-        String email = JwtUtils.getClaimByToken((String) SecurityUtils.getSubject().getPrincipal()).getSubject();
+        // 使用Token获取用户信息
+        String email = JwtUtils.getClaimByToken(getToken()).getSubject();
         Employee auditor = employeeServiceimpl.findByEmail(email);
         attendance.setEmployeeId(auditor.getId());
         attendance.setName(auditor.getUsername());
@@ -98,7 +101,7 @@ public class AttendanceServiceImpl extends ServiceImpl<AttendanceMapper, Attenda
             attendance.setStatus("迟到");
         }
         QueryWrapper<Employee> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",id);
+        queryWrapper.eq("id",auditor.getId());
         //获取员工姓名
         Employee employee = employeeMapper.selectOne(queryWrapper);
         String employeeName = employee.getUsername();
@@ -153,6 +156,16 @@ public class AttendanceServiceImpl extends ServiceImpl<AttendanceMapper, Attenda
         attendanceMapper.updateById(attendance);
         // 返回打卡信息
         return "打卡成功时间: " + now + " 姓名: "+ attendance.getEmployeeId() + " 状态: " + attendance.getStatus();
+    }
+    public String getToken() {
+        String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .getRequest()
+                .getHeader("Authorization");
+        // 假设Token是Bearer类型的，需要去掉前缀
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        return token;
     }
 
 }

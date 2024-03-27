@@ -2,7 +2,6 @@ package com.example.enterpriseattendancesystem;
 
 import com.example.enterpriseattendancesystem.Util.JwtFilter;
 import com.example.enterpriseattendancesystem.realm.CustomRealm;
-import org.apache.shiro.session.mgt.DefaultSessionManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
@@ -53,6 +52,7 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSecurityManager(securityManager);
 
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
+//        filterChainDefinitionMap.put("/**", "cors");
         filterChainDefinitionMap.put("/employee/login", "anon");
         filterChainDefinitionMap.put("/employee/register", "anon");
         filterChainDefinitionMap.put("/api/attendance/**", "jwt");
@@ -64,6 +64,7 @@ public class ShiroConfig {
         // 注册jwt过滤器
         Map<String, Filter> filters = new HashMap<>();
         filters.put("jwt", new JwtFilter());
+//        filters.put("cors", new CorsFilter()); // 注册自定义CORS过滤器
         shiroFilterFactoryBean.setFilters(filters);
 
         return shiroFilterFactoryBean;
