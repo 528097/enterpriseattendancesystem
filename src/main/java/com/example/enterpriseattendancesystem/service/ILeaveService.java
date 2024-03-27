@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.enterpriseattendancesystem.entity.Attendance;
 import com.example.enterpriseattendancesystem.entity.Leave;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.enterpriseattendancesystem.request.LeaveRequest;
 
 import java.util.Date;
 
@@ -17,9 +18,11 @@ import java.util.Date;
  */
 public interface ILeaveService extends IService<Leave> {
 
-    String saveLeave(Long id, String startDate, String endDate, String leaveReason);
+    String saveLeave(LeaveRequest leaveRequest);
 
     String saveLeaveApproval(Long id , String status);
 
-    IPage<Leave> findAll(String status, int pageNum, int pageSize);
+    IPage<Leave> findAll(LeaveRequest request, int pageNum, int pageSize);
+
+    String deleteLeave(Long id);
 }

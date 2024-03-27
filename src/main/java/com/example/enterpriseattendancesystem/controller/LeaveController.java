@@ -4,6 +4,7 @@ package com.example.enterpriseattendancesystem.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.enterpriseattendancesystem.entity.Attendance;
 import com.example.enterpriseattendancesystem.entity.Leave;
+import com.example.enterpriseattendancesystem.request.LeaveRequest;
 import com.example.enterpriseattendancesystem.service.ILeaveService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
@@ -28,14 +29,10 @@ public class LeaveController {
         this.leaveService = leaveService;
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/apply")
     @RequiresPermissions("attendance:leave")
-    public String createLeave(
-            @PathVariable Long id,
-            @RequestParam String startDate,
-            @RequestParam String endDate,
-            @RequestParam String leaveReason) {
-        return leaveService.saveLeave(id, startDate, endDate, leaveReason);
+    public String createLeave(@RequestBody LeaveRequest leaveRequest) {
+        return leaveService.saveLeave(leaveRequest);
     }
     @PostMapping("/approve/{id}")
     @RequiresPermissions("attendance:leave:approve")
@@ -44,13 +41,19 @@ public class LeaveController {
             @RequestParam String status) {
         return leaveService.saveLeaveApproval(id, status);
     }
+    @PostMapping("/delete/{id}")
+    @ResponseBody
+    @RequiresPermissions("attendance:leave:delete")
+    public String deleteAttendance(@PathVariable Long id) {
+        return leaveService.deleteLeave(id);
+    }
     @PostMapping("/list")
     @RequiresPermissions("attendance:leave:list")
     public IPage<Leave> leaveList(
-            @RequestParam(required = false) String status,
+            @RequestBody LeaveRequest request,
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize) {
-        IPage<Leave> page = leaveService.findAll(status, pageNum, pageSize);
+        IPage<Leave> page = leaveService.findAll(request, pageNum, pageSize);
         return page;
     }
 

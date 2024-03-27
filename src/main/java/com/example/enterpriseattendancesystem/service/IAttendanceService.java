@@ -3,6 +3,8 @@ package com.example.enterpriseattendancesystem.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.enterpriseattendancesystem.entity.Attendance;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.enterpriseattendancesystem.entity.Employee;
+import com.example.enterpriseattendancesystem.request.AttendanceRequest;
 
 /**
  * <p>
@@ -20,7 +22,11 @@ public interface IAttendanceService extends IService<Attendance> {
 
     String saveStart();
 
-    Object update(Long id, Attendance attendance);
+    Object update(Long id, AttendanceRequest request);
 
-    String saveEnd(Long id);
+    String saveEnd();
+
+    Employee userInfo();
+
+    IPage<Attendance> conditionSearch(AttendanceRequest request,int pageNum, int pageSize);
 }

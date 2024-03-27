@@ -40,7 +40,7 @@ public class CodeGenerator {
                 "jdbc:mysql://127.0.0.1:3306/enterpriseattendancesystem?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8"
                 , "com.mysql.cj.jdbc.Driver"
                 , "root"
-                , "1233210"));
+                , "xyq2744338040"));
         mpg.setTemplate(templateConfig());
         mpg.setStrategy(strategyConfig(tableName));
         mpg.setTemplateEngine(new FreemarkerTemplateEngine());

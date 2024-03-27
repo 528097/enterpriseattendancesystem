@@ -35,11 +35,15 @@ public class CustomRealm extends AuthorizingRealm {
             info.addStringPermission("attendance:end");
             info.addStringPermission("attendance:leave:approve");
             info.addStringPermission("attendance:leave:list");
+            info.addStringPermission("attendance:leave:delete");
+            info.addStringPermission("attendance:userinfo");
+            info.addStringPermission("attendance:get/want");
         } else {
             info.addStringPermission("attendance:get");
             info.addStringPermission("attendance:create");
             info.addStringPermission("attendance:leave");
             info.addStringPermission("attendance:end");
+            info.addStringPermission("attendance:userinfo");
         }
         return info;
     }
