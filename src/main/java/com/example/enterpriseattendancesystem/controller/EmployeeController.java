@@ -11,12 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * <p>
@@ -26,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author 谢妍雨
  * @since 2024-03-20
  */
+@CrossOrigin(origins = "http://localhost:8080")
 @Controller
 @RequestMapping("/employee")
 public class EmployeeController {
@@ -53,7 +51,7 @@ public class EmployeeController {
             headers.set("Authorization", response.getToken());
             return new ResponseEntity<>("登录成功", headers, HttpStatus.OK);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response.getMessage());
+            return new ResponseEntity<>(response.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
 }

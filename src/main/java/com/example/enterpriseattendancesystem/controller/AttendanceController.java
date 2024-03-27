@@ -27,14 +27,13 @@ public class AttendanceController {
     @Autowired
     private IAttendanceService attendanceService;
 
-    @PostMapping("/get/{id}")
+    @PostMapping("/get")
     @RequiresPermissions("attendance:get")
     public IPage<Attendance> getAttendance(
-            @PathVariable Long id,
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize) {
         // 调用 Service 层的方法获取数据
-        IPage<Attendance> page = attendanceService.findById(id, pageNum, pageSize);
+        IPage<Attendance> page = attendanceService.findById(pageNum, pageSize);
         return page;
     }
 

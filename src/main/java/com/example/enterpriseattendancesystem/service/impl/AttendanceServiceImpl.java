@@ -41,12 +41,14 @@ public class AttendanceServiceImpl extends ServiceImpl<AttendanceMapper, Attenda
     private EmployeeServiceImpl employeeServiceimpl;
 
     @Override
-    public IPage<Attendance> findById(Long id, int pageNum, int pageSize) {
+    public IPage<Attendance> findById(int pageNum, int pageSize) {
+        String email = JwtUtils.getClaimByToken((String) SecurityUtils.getSubject().getPrincipal()).getSubject();
+        Employee auditor = employeeServiceimpl.findByEmail(email);
         // 创建 Page 对象，设置当前页码和每页显示的数量
         Page<Attendance> page = new Page<>(pageNum, pageSize);
         // 创建 QueryWrapper 对象，设置查询条件为员工 ID
         QueryWrapper<Attendance> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("employee_id", id).eq("version",1);
+        queryWrapper.eq("employee_id", auditor.getId()).eq("version",1);
         // 使用 MyBatis-Plus 提供的分页查询方法，传入 Page 对象和 QueryWrapper 对象
         IPage<Attendance> attendancePage = attendanceMapper.selectPage(page, queryWrapper);
         return attendancePage;

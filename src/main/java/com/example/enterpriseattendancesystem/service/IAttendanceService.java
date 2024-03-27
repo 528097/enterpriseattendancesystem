@@ -14,7 +14,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IAttendanceService extends IService<Attendance> {
 
-    IPage<Attendance> findById(Long id, int pageNum, int pageSize);
+    IPage<Attendance> findById(int pageNum, int pageSize);
 
     String deleteById(Long id);
 
