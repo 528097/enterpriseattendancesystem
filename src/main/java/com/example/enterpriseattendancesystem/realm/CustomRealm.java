@@ -31,19 +31,21 @@ public class CustomRealm extends AuthorizingRealm {
             info.addStringPermission("attendance:create");
             info.addStringPermission("attendance:update");
             info.addStringPermission("attendance:delete");
-            info.addStringPermission("attendance:leave");
             info.addStringPermission("attendance:end");
-            info.addStringPermission("attendance:leave:approve");
-            info.addStringPermission("attendance:leave:list");
-            info.addStringPermission("attendance:leave:delete");
+            info.addStringPermission("leave:apply");
+            info.addStringPermission("leave:approve");
+            info.addStringPermission("leave:list");
+            info.addStringPermission("leave:delete");
             info.addStringPermission("attendance:userinfo");
             info.addStringPermission("attendance:get/want");
         } else {
             info.addStringPermission("attendance:get");
             info.addStringPermission("attendance:create");
-            info.addStringPermission("attendance:leave");
             info.addStringPermission("attendance:end");
             info.addStringPermission("attendance:userinfo");
+            info.addStringPermission("leave:apply");
+            info.addStringPermission("leave:list");
+
         }
         return info;
     }

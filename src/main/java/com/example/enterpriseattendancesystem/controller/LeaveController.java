@@ -7,6 +7,7 @@ import com.example.enterpriseattendancesystem.entity.Leave;
 import com.example.enterpriseattendancesystem.request.LeaveRequest;
 import com.example.enterpriseattendancesystem.service.ILeaveService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -20,7 +21,7 @@ import java.util.Date;
  * @since 2024-03-23
  */
 @CrossOrigin(origins = "http://localhost:8080")
-@RestController
+@Controller
 @RequestMapping("/leave")
 public class LeaveController {
     private ILeaveService leaveService;
@@ -30,12 +31,14 @@ public class LeaveController {
     }
 
     @PostMapping("/apply")
-    @RequiresPermissions("attendance:leave")
+    @ResponseBody
+    @RequiresPermissions("leave:apply")
     public String createLeave(@RequestBody LeaveRequest leaveRequest) {
         return leaveService.saveLeave(leaveRequest);
     }
     @PostMapping("/approve/{id}")
-    @RequiresPermissions("attendance:leave:approve")
+    @ResponseBody
+    @RequiresPermissions("leave:approve")
     public String approveLeave(
             @PathVariable Long id,
             @RequestParam String status) {
@@ -43,12 +46,13 @@ public class LeaveController {
     }
     @PostMapping("/delete/{id}")
     @ResponseBody
-    @RequiresPermissions("attendance:leave:delete")
+    @RequiresPermissions("leave:delete")
     public String deleteAttendance(@PathVariable Long id) {
         return leaveService.deleteLeave(id);
     }
     @PostMapping("/list")
-    @RequiresPermissions("attendance:leave:list")
+    @ResponseBody
+    @RequiresPermissions("leave:list")
     public IPage<Leave> leaveList(
             @RequestBody LeaveRequest request,
             @RequestParam(defaultValue = "1") int pageNum,
