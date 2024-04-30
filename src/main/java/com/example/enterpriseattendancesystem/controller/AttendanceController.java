@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 /**
  * <p>
  *  前端控制器
@@ -28,6 +30,21 @@ public class AttendanceController {
     private static final Logger logger = LoggerFactory.getLogger(AttendanceController.class);
     @Autowired
     private IAttendanceService attendanceService;
+
+    @PostMapping("/setStartEndWorkTime")
+    @ResponseBody
+    @RequiresPermissions("attendance:setStartEndWorkTime")
+    public String setStartWorkTime(
+            @RequestBody AttendanceRequest request) {
+        return attendanceService.setStartEndWorkTime(request.getStartTime(), request.getEndTime());
+    }
+    @PostMapping("/getStartEndWorkTime")
+    @ResponseBody
+    @RequiresPermissions("attendance:getStartEndWorkTime")
+    public String getStartWorkTime() {
+        return attendanceService.getStartEndWorkTime();
+    }
+
 
     @PostMapping("/get")
     @ResponseBody
@@ -83,5 +100,15 @@ public class AttendanceController {
     @RequiresPermissions("attendance:userinfo")
     public Employee userInfo() {
         return attendanceService.userInfo();
+    }
+
+    @PostMapping("/statistics")
+    @ResponseBody
+    @RequiresPermissions("attendance:statistics")
+    public Map<String, Object> getAttendanceStatistics(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer day) {
+        return attendanceService.getStatistics(year, month, day);
     }
 }

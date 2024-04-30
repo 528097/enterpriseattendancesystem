@@ -38,7 +38,11 @@ public class CustomRealm extends AuthorizingRealm {
             info.addStringPermission("leave:delete");
             info.addStringPermission("attendance:userinfo");
             info.addStringPermission("attendance:get/want");
+            info.addStringPermission("attendance:statistics");
+            info.addStringPermission("attendance:getStartEndWorkTime");
+            info.addStringPermission("attendance:setStartEndWorkTime");
         } else {
+            info.addStringPermission("attendance:getStartEndWorkTime");
             info.addStringPermission("attendance:get");
             info.addStringPermission("attendance:create");
             info.addStringPermission("attendance:end");

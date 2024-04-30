@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.enterpriseattendancesystem.entity.Employee;
 import com.example.enterpriseattendancesystem.request.AttendanceRequest;
 
+import java.time.LocalTime;
+import java.util.Map;
+
 /**
  * <p>
  *  服务类
@@ -29,4 +32,11 @@ public interface IAttendanceService extends IService<Attendance> {
     Employee userInfo();
 
     IPage<Attendance> conditionSearch(AttendanceRequest request,int pageNum, int pageSize);
+
+
+    Map<String, Object> getStatistics(Integer year, Integer month, Integer day);
+
+    String setStartEndWorkTime(LocalTime startTime, LocalTime endTime);
+
+    String getStartEndWorkTime();
 }

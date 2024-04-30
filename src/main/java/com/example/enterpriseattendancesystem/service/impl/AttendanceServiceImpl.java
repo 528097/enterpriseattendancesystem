@@ -22,7 +22,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -34,6 +38,7 @@ import java.util.Date;
  */
 @Service
 public class AttendanceServiceImpl extends ServiceImpl<AttendanceMapper, Attendance> implements IAttendanceService {
+
     @Autowired
     private AttendanceMapper attendanceMapper;
 
@@ -83,6 +88,10 @@ public class AttendanceServiceImpl extends ServiceImpl<AttendanceMapper, Attenda
         String email = JwtUtils.getClaimByToken(getToken()).getSubject();
         Employee auditor = employeeServiceimpl.findByEmail(email);
         LocalDate todayLocalDate = LocalDate.now();
+        //获取上班标准时间
+        QueryWrapper<Attendance> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("name","上班时间和下班时间").eq("version", 0);
+        Attendance attendance2 = attendanceMapper.selectOne(queryWrapper1);
         // 将LocalDate转换为Date类型
         QueryWrapper<Attendance> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name",auditor.getUsername()).eq("date", todayLocalDate);;
@@ -103,8 +112,10 @@ public class AttendanceServiceImpl extends ServiceImpl<AttendanceMapper, Attenda
         LocalDate date = now.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         attendance.setDate(date);
 
-        //判断并设置状态
-        if(new Time(now.getTime()).before(Time.valueOf("10:00:00"))){
+        // 获取当前时间
+        LocalTime now1 = LocalTime.now();
+        // 判断并设置状态
+        if(now1.isBefore(attendance2.getStartTime())){
             attendance.setStatus("正常");
         } else {
             attendance.setStatus("迟到");
@@ -146,7 +157,10 @@ public class AttendanceServiceImpl extends ServiceImpl<AttendanceMapper, Attenda
     public String saveEnd() {
         // 创建新的QueryWrapper，设置查询条件为员工ID
         QueryWrapper<Attendance> queryWrapper = new QueryWrapper<>();
-        // 查询出最新的打卡记录
+        //获取下班时间
+        QueryWrapper<Attendance> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("name","上班时间和下班时间").eq("version", 0);
+        Attendance attendance2 = attendanceMapper.selectOne(queryWrapper1);
         // 使用Token获取用户信息
         String email = JwtUtils.getClaimByToken(getToken()).getSubject();
         Employee auditor = employeeServiceimpl.findByEmail(email);
@@ -169,16 +183,18 @@ public class AttendanceServiceImpl extends ServiceImpl<AttendanceMapper, Attenda
         // 设定下班时间
         attendance.setEndTime(endTime);
         String status = attendance.getStatus();
+        // 获取当前时间
+        LocalTime now1 = LocalTime.now();
         // 判断并设置状态
-        if (new Time(now.getTime()).after(Time.valueOf("18:00:00"))) {
-            attendance.setStatus(status+",正常");
+        if(now1.isAfter(attendance2.getEndTime())){
+            attendance.setStatus(status + ",正常");
         } else {
-            attendance.setStatus(status+",早退");
+            attendance.setStatus(status + ",早退");
         }
         // 更新打卡信息
         attendanceMapper.update(attendance,queryWrapper);
         // 返回打卡信息
-        return "下班成功时间: " + now + " 姓名: "+ auditor.getUsername() + " 状态: " + attendance.getStatus();
+        return "下班成功时间: " + now + " 姓名: "+ auditor.getUsername() + " 状态: " + attendance.getStatus() + "下班标准";
     }
     public String getToken() {
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
@@ -231,5 +247,68 @@ public class AttendanceServiceImpl extends ServiceImpl<AttendanceMapper, Attenda
         // 返回查询结果
         return attendancePage;
     }
+
+    @Override
+    public Map<String, Object> getStatistics(Integer year, Integer month, Integer day) {
+        // 创建返回的结果集
+        Map<String, Object> statistics = new HashMap<>();
+        // 创建QueryWrapper对象, 设置查询条件
+        QueryWrapper<Attendance> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("status", "COUNT(*) as count").groupBy("status");
+
+        // 根据年、月、日参数添加日期范围条件
+        if (year != null) {
+            LocalDate start = LocalDate.of(year, 1, 1);
+            LocalDate end = LocalDate.of(year, 12, 31);
+            if (month != null) {
+                start = LocalDate.of(year, month, 1);
+                end = start.with(TemporalAdjusters.lastDayOfMonth());
+                if (day != null) {
+                    start = LocalDate.of(year, month, day);
+                    end = start;
+                }
+            }
+            queryWrapper.between("date", start, end);
+        }
+
+        // 执行查询操作
+        List<Map<String, Object>> results = attendanceMapper.selectMaps(queryWrapper);
+        // 将查询结果转换为前端需要的格式
+        for (Map<String, Object> result : results) {
+            String status = (String) result.get("status");
+            Long count = (Long) result.get("count");
+            statistics.put(status, count);
+        }
+        return statistics;
+    }
+
+    @Override
+    public String setStartEndWorkTime(LocalTime startTime,LocalTime endTime) {
+        //获取下班时间
+        QueryWrapper<Attendance> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("name","上班时间和下班时间").eq("version", 0);
+        Attendance attendance2 = attendanceMapper.selectOne(queryWrapper1);
+
+        //设置新的上班时间
+        QueryWrapper<Attendance> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",attendance2.getId());
+        if (startTime != null) {
+            attendance2.setStartTime(startTime);
+        }
+        if (endTime != null) {
+            attendance2.setEndTime(endTime);
+        }
+        attendanceMapper.update(attendance2,queryWrapper);
+        return "上班时间设置成功为：" + startTime + "下班时间设置成功为：" + endTime;
+    }
+
+    @Override
+    public String getStartEndWorkTime() {
+        QueryWrapper<Attendance> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("name","上班时间和下班时间").eq("version", 0);
+        Attendance attendance2 = attendanceMapper.selectOne(queryWrapper1);
+        return "上班时间为：" + attendance2.getStartTime() + "下班时间为：" + attendance2.getEndTime();
+    }
+
 
 }
