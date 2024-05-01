@@ -24,6 +24,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * <p>
@@ -83,7 +84,7 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
         Leave leave = leaveMapper.selectOne(queryWrapper);
 
         if (leave != null) {
-            if (leave.getName().equals(auditor.getUsername())) {
+            if (leave.getName().equals(auditor.getUsername()) && !Objects.equals(auditor.getPosition(), "管理员")) {
                 return "你不能给自己审核请假";
             }
             // 设置审核人和审核状态

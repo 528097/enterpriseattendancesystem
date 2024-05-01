@@ -1,11 +1,16 @@
 package com.example.enterpriseattendancesystem.controller;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.enterpriseattendancesystem.Util.JwtUtils;
 import com.example.enterpriseattendancesystem.entity.Employee;
+import com.example.enterpriseattendancesystem.entity.Leave;
+import com.example.enterpriseattendancesystem.request.AttendanceRequest;
+import com.example.enterpriseattendancesystem.request.LeaveRequest;
 import com.example.enterpriseattendancesystem.response.LoginResponse;
 import com.example.enterpriseattendancesystem.service.IEmployeeService;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -53,6 +58,36 @@ public class EmployeeController {
         } else {
             return new ResponseEntity<>(response.getMessage(), HttpStatus.UNAUTHORIZED);
         }
+    }
+    @PostMapping("/list")
+    @ResponseBody
+    @RequiresPermissions("employee:list")
+    public IPage<Employee> employeeList(
+            @RequestBody Employee employee,
+            @RequestParam(defaultValue = "1") int pageNum,
+            @RequestParam(defaultValue = "10") int pageSize) {
+        IPage<Employee> page = employeeService.findPage(employee, pageNum, pageSize);
+        return page;
+    }
+    @PostMapping("/add")
+    @ResponseBody
+    @RequiresPermissions("employee:add")
+    public String addEmployee(@RequestBody Employee employee) {
+        return employeeService.addEmployee(employee);
+    }
+
+    @PostMapping("/update/{id}")
+    @ResponseBody
+    @RequiresPermissions("employee:update")
+    public String updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
+        return employeeService.updateEmployee(id,employee);
+    }
+
+    @PostMapping("/delete/{id}")
+    @ResponseBody
+    @RequiresPermissions("employee:delete")
+    public String deleteEmployee(@PathVariable Long id) {
+        return employeeService.deleteEmployee(id);
     }
 }
 

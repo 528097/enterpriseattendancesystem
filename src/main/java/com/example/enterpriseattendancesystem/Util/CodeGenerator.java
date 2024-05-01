@@ -12,7 +12,7 @@ import java.io.File;
 
 public class CodeGenerator {
     public static void main(String[] args) {
-        generator("谢妍雨", "enterpriseAttendanceSystem", "com.example.enterpriseattendancesystem", "", "leave");
+        generator("谢妍雨", "enterpriseAttendanceSystem", "com.example.enterpriseattendancesystem", "", "employee");
         //generator("xghao", "", "com.teamxu.learnmybatis", "m2", "role", FileType.ENTITY, FileType.MAPPER);
     }
 

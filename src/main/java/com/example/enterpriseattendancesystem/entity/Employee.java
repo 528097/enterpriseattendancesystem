@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author 谢妍雨
- * @since 2024-03-25
+ * @since 2024-05-01
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -34,6 +34,8 @@ public class Employee implements Serializable {
     private String email;
 
     private String position;
+
+    private Integer version;
 
 
 }

@@ -88,8 +88,13 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/employee/register", "anon");
 
         // 配置需要JWT验证的路由（注意这些路由的顺序要在CORS过滤器之后）
+        filterChainDefinitionMap.put("/employee/update/**", "jwt");
+        filterChainDefinitionMap.put("/employee/delete/**", "jwt");
         filterChainDefinitionMap.put("/api/attendance/**", "jwt");
         filterChainDefinitionMap.put("/leave/**", "jwt");
+        filterChainDefinitionMap.put("/employee/list", "jwt");
+        filterChainDefinitionMap.put("/employee/add", "jwt");
+
 
         // 由于CORS过滤器需要应用于所有请求，因此将其放在最后
         filterChainDefinitionMap.put("/**", "cors");

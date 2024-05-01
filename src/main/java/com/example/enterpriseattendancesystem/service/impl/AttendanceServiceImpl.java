@@ -194,7 +194,7 @@ public class AttendanceServiceImpl extends ServiceImpl<AttendanceMapper, Attenda
         // 更新打卡信息
         attendanceMapper.update(attendance,queryWrapper);
         // 返回打卡信息
-        return "下班成功时间: " + now + " 姓名: "+ auditor.getUsername() + " 状态: " + attendance.getStatus() + "下班标准";
+        return "下班成功时间: " + now + " 姓名: "+ auditor.getUsername() + " 状态: " + attendance.getStatus();
     }
     public String getToken() {
         String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
